@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import express from "express";
+import { createChannel, getChannel } from "../controllers/channelController.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
-const CommentSchema = new mongoose.Schema({
-  video: { type: mongoose.Schema.Types.ObjectId, ref: "Video" },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  text: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-});
+const router = express.Router();
 
-export default mongoose.model("Comment", CommentSchema);
+router.post("/", verifyToken, createChannel);
+router.get("/:id", getChannel);
+
+export default router;
