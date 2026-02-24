@@ -1,31 +1,30 @@
 import Video from "../models/Video.js";
 
-export const getAllVideos = async (req, res) => {
-  const videos = await Video.find().populate("user", "username");
-  res.json(videos);
+// GET all videos
+export const getVideos = async (req, res) => {
+  try {
+    const videos = await Video.find();
+    res.json(videos);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
-export const getVideoById = async (req, res) => {
-  const video = await Video.findById(req.params.id).populate("user", "username");
-
-  if (!video) return res.status(404).json({ message: "Video not found" });
-
-  video.views += 1;
-  await video.save();
-
-  res.json(video);
-};
-
+// CREATE video
 export const createVideo = async (req, res) => {
-  const { title, description, videoUrl, thumbnail } = req.body;
+  try {
+    const { title, thumbnail, channelName, views } = req.body;
 
-  const video = await Video.create({
-    title,
-    description,
-    videoUrl,
-    thumbnail,
-    user: req.user
-  });
+    const video = new Video({
+      title,
+      thumbnail,
+      channelName,
+      views,
+    });
 
-  res.status(201).json(video);
+    const createdVideo = await video.save();
+    res.status(201).json(createdVideo);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
 };
